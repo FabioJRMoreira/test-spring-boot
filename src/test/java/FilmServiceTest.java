@@ -41,8 +41,8 @@ public class FilmServiceTest {
 
         acteur = new Acteur();
         acteur.setId(1L);
-        acteur.setNom("Doe");
-        acteur.setPrenom("John");
+        acteur.setNom("Moreira");
+        acteur.setPrenom("Fabio");
 
         film = new Film();
         film.setId(1L);
