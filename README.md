@@ -132,9 +132,4 @@ http://localhost:8080/api/film --header "Content-Type:application/json"
 Vous pouvez utiliser la collection postman incluse dans le projet si vous désirez valider votre API avec des assertions.  
 Celle-ci se retrouve dans le dossier **postman** du projet.
 
-## Soumettre le test
 
-Une fois terminé, veuillez créer un nouveau dépot sur GitHub et l'envoyer par courriel.
-Merci de ne pas faire un fork du dépôt de code existant.
-
-Bonne chance!
