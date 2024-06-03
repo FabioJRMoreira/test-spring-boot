@@ -1,6 +1,6 @@
 import com.example.testspringboot.controller.FilmController;
 import com.example.testspringboot.dto.FilmDto;
-import com.example.testspringboot.model.Film;
+import com.example.testspringboot.exception.GlobalExceptionHandler;
 import com.example.testspringboot.service.FilmService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 public class FilmControllerTest {
     @InjectMocks
     private FilmController filmController;
@@ -30,7 +31,9 @@ public class FilmControllerTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(filmController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(filmController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
     }
 
     @Test
@@ -44,7 +47,7 @@ public class FilmControllerTest {
         mockMvc.perform(post("/api/film")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"titre\":\"Test Title\",\"description\":\"Test Description\"}"))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.titre").value("Test Title"))
                 .andExpect(jsonPath("$.description").value("Test Description"));
 
@@ -58,7 +61,8 @@ public class FilmControllerTest {
         mockMvc.perform(post("/api/film")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"titre\":\"Test Title\",\"description\":\"Test Description\"}"))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Service error"));
 
         verify(filmService, times(1)).saveFilm(any(FilmDto.class));
     }
@@ -88,7 +92,8 @@ public class FilmControllerTest {
         when(filmService.getAllFilms()).thenThrow(new RuntimeException("Service error"));
 
         mockMvc.perform(get("/api/film"))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Service error"));
 
         verify(filmService, times(1)).getAllFilms();
     }
@@ -125,9 +130,10 @@ public class FilmControllerTest {
     public void testGetFilmByIdThrowsException() throws Exception {
         when(filmService.getFilmById(anyLong())).thenThrow(new RuntimeException("Service error"));
 
-        mockMvc.perform(get("/api/film/1")).andReturn().getResponse();
+        mockMvc.perform(get("/api/film/1"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Service error"));
 
         verify(filmService, times(1)).getFilmById(1L);
     }
-
 }

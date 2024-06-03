@@ -32,8 +32,5 @@ public class FilmController {
         }
         return new ResponseEntity<>(film, HttpStatus.OK);
     }
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+
 }
